@@ -1,0 +1,12 @@
+--- !OWNERS
+
+version: 2
+
+default:
+  jira_project: ML
+  owners:
+    num_required_reviewers: 1
+    users:
+      - jqian2
+    teams:
+      - Snapchat/bento-training-core
