@@ -159,3 +159,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 .DS_Store
+
+hps_tf_triton_dense.model
+model_repo
+sok_dlrm_sparse.model/
+dlrm_tf_saved_model/
+dlrm_sparse.model/
+dlrm_dense.model/
+dlrm.json
