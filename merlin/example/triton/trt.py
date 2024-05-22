@@ -4,6 +4,11 @@ from tensorflow.python.compiler.tensorrt import trt_convert as trt
 import tensorflow as tf
 from train import generate_random_samples, args
 
+# Release the occupied GPU memory by TensorFlow and Keras
+from numba import cuda
+cuda.select_device(0)
+cuda.close()
+
 ORIGINAL_MODEL_PATH = "model_repo/hps_tf_triton/1/model.savedmodel"
 NEW_MODEL_PATH = "model_repo/hps_tf_triton/2/model.savedmodel"
 
