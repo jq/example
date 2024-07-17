@@ -41,7 +41,7 @@ flags.DEFINE_string('model_dir', 'model_dir',
                     'Directory where checkpoint stores.')
 flags.DEFINE_string('export_dir', 'export_dir',
                     'Directory where model stores for inference.')
-flags.DEFINE_integer('steps_per_epoch', 20000, 'Number of training steps.')
+flags.DEFINE_integer('steps_per_epoch', 2, 'Number of training steps.')
 flags.DEFINE_integer('epochs', 1, 'Number of training epochs.')
 flags.DEFINE_integer('embedding_size', 32,
                      'Embedding size for users and movies')
@@ -589,7 +589,7 @@ def train():
     model.fit(dataset,
               callbacks=callbacks_list,
               epochs=FLAGS.epochs,
-              steps_per_epoch=FLAGS.steps_per_epoch,
+              steps_per_epoch=2, #FLAGS.steps_per_epoch,
               verbose=1 if hvd.rank() == 0 else 0)
 
     export_to_savedmodel(model, FLAGS.model_dir)
