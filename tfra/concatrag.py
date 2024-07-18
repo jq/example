@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def process_tensors(ragged1, ragged2, tensor1, tensor2, embedding_matrix):
+def concat_lookup(ragged1, ragged2, tensor1, tensor2, embedding_matrix):
     flat_ragged1 = ragged1.flat_values
     flat_ragged2 = ragged2.flat_values
 
@@ -19,7 +19,7 @@ def process_tensors(ragged1, ragged2, tensor1, tensor2, embedding_matrix):
 
     return concatenated_final
 
-def independent_lookup_pool(ragged1, ragged2, tensor1, tensor2, embedding_matrix):
+def independent_lookup(ragged1, ragged2, tensor1, tensor2, embedding_matrix):
     embeddings_ragged1 = tf.nn.embedding_lookup(embedding_matrix, ragged1.flat_values)
     embeddings_ragged2 = tf.nn.embedding_lookup(embedding_matrix, ragged2.flat_values)
     embeddings_tensor1 = tf.nn.embedding_lookup(embedding_matrix, tensor1)
@@ -32,23 +32,17 @@ def independent_lookup_pool(ragged1, ragged2, tensor1, tensor2, embedding_matrix
 
     return concatenated_embeddings
 
-ragged1 = tf.RaggedTensor.from_row_lengths([1, 2, 3, 4], [2, 2])
-ragged2 = tf.RaggedTensor.from_row_lengths([1, 2], [1, 1])
-tensor1 = tf.constant([3, 4, 5])
-tensor2 = tf.constant([6, 7, 8])
-embedding_matrix = tf.random.uniform([10, 5], -1, 1)
-
-result_process_tensors = process_tensors(ragged1, ragged2, tensor1, tensor2, embedding_matrix)
-result_independent_lookup_pool = independent_lookup_pool(ragged1, ragged2, tensor1, tensor2, embedding_matrix)
-
-print("Result from process_tensors:")
-print(result_process_tensors)
-print("Result from independent_lookup_pool:")
-print(result_independent_lookup_pool)
-
 def embeddings_equality(embedding1, embedding2):
     are_equal = tf.reduce_all(tf.equal(embedding1, embedding2))
     return are_equal
 
-print(f"Embeddings equality test result: {embeddings_equality(result_process_tensors, result_independent_lookup_pool)}")
+def compare_lookup():
+    ragged1 = tf.RaggedTensor.from_row_lengths([1, 2, 3, 4], [2, 2])
+    ragged2 = tf.RaggedTensor.from_row_lengths([1, 2], [1, 1])
+    tensor1 = tf.constant([3, 4, 5])
+    tensor2 = tf.constant([6, 7, 8])
+    embedding_matrix = tf.random.uniform([10, 5], -1, 1)
+    result_process_tensors = concat_lookup(ragged1, ragged2, tensor1, tensor2, embedding_matrix)
+    result_independent_lookup_pool = independent_lookup(ragged1, ragged2, tensor1, tensor2, embedding_matrix)
+    print(f"Embeddings equality test result: {embeddings_equality(result_process_tensors, result_independent_lookup_pool)}")
 
