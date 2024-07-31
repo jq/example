@@ -7,11 +7,11 @@ def concat_tensors(tensors):
     for tensor in tensors:
         if isinstance(tensor, tf.RaggedTensor):
             flat_values.append(tensor.flat_values)
-            row_lengths.append(tensor.row_lengths().numpy().tolist())  # Append as a sublist
+            row_lengths.append(tensor.row_lengths())  # Append as a sublist
         else:
             flat_values.append(tf.reshape(tensor, [-1]))
-            # Create a sublist for each tensor's row lengths; for regular tensors, each element's row length is 1
-            row_lengths.append([1] * tensor.shape[0])
+            tensor_row_lengths = tf.ones(tf.shape(tensor)[0], dtype=tf.int32)
+            row_lengths.append(tensor_row_lengths)
     concatenated = tf.concat(flat_values, axis=0)
     return concatenated, row_lengths
 
@@ -21,6 +21,7 @@ def concat_embedding(tensors, embeddings, row_lengths):
     for i, tensor in enumerate(tensors):
         if isinstance(tensor, tf.RaggedTensor):
             count = tensor.flat_values.shape[0]
+            print(f"Ragged tensor count: {tf.shape(tensor.flat_values)[0]} {tensor.flat_values.shape}")
             ragged_embeddings = tf.RaggedTensor.from_row_lengths(
                 embeddings[offset:offset+count], row_lengths[i])
             pooled = tf.reduce_mean(ragged_embeddings, axis=1)
@@ -28,7 +29,7 @@ def concat_embedding(tensors, embeddings, row_lengths):
             offset += count
         else:
             # Directly use the row_lengths for regular tensors to manage the embeddings lookup and reshaping
-            count = sum(row_lengths[i])  # Sum the lengths to find how many embeddings are needed
+            count = tf.shape(tensor)[0]  # Sum the lengths to find how many embeddings are needed
             pooled_embeddings = tf.reshape(embeddings[offset:offset+count], [-1, embeddings.shape[-1]])
             results.append(pooled_embeddings)
             offset += count
@@ -77,3 +78,13 @@ def compare_lookup():
     print(f"Result shape from independent lookup: {result_independent_lookup_pool.shape}")
 
 compare_lookup()
+
+# for default value
+#movie_genres_ragged = tf.RaggedTensor.from_tensor(tf.expand_dims(x['movie_genres'], axis=-1), lengths=None)
+# row_lengths = movie_genres_ragged.row_lengths()
+# mask = tf.greater(row_lengths, 0)
+#
+# default_values = tf.fill([tf.shape(row_lengths)[0], 1], tf.cast(21, tf.int64))
+# filled_movie_genres = tf.where(tf.expand_dims(mask, 1), movie_genres_ragged.to_tensor(), default_values)
+#
+# movie_genres_ragged = tf.RaggedTensor.from_tensor(filled_movie_genres)
