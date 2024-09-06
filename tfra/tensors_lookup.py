@@ -36,6 +36,8 @@ def concat_embedding(tensors, embeddings, row_lengths):
             offset += count
 
     return tf.concat(results, axis=0)
+
+
 def concat_lookup(tensors, embedding_matrix):
     concatenated, row_lengths = concat_tensors(tensors)
     embeddings = tf.nn.embedding_lookup(embedding_matrix, concatenated)
@@ -63,8 +65,8 @@ def embeddings_equality(embedding1, embedding2):
 def compare_lookup():
     ragged1 = tf.RaggedTensor.from_row_lengths([1, 2, 3, 4], [2, 2])
     ragged2 = tf.RaggedTensor.from_row_lengths([1, 2], [1, 1])
-    tensor1 = tf.constant([[3], [4, 5]])
-    tensor2 = tf.constant([[6], [7, 8]])
+    tensor1 = tf.constant([[3, 3], [4, 5]])
+    tensor2 = tf.constant([[6, 6], [7, 8]])
     embedding_matrix = tf.random.uniform([10, 5], -1, 1)
 
     tensors = [ragged1, ragged2, tensor1, tensor2]
